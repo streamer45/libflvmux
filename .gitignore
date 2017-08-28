@@ -1,0 +1,4 @@
+*.so
+*.o
+*.a
+tests/*_test
