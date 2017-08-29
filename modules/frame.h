@@ -4,9 +4,18 @@
 #include "buffer.h"
 
 typedef enum {
-  AUDIO_FRAME = 1,
-  VIDEO_FRAME = 2
+  FRAME_AUDIO = 1,
+  FRAME_VIDEO
 } frame_type_t;
+
+typedef enum {
+  FRAME_AAC = 1,
+  FRAME_MP3
+} frame_audio_format_t;
+
+typedef enum {
+  FRAME_H264 = 1
+} frame_video_format_t;
 
 typedef struct {
   int channels;
@@ -19,6 +28,7 @@ typedef struct {
   int height;
   int rate;
   bool keyframe;
+  int fmt;
 } video_frame_t;
 
 typedef struct {
