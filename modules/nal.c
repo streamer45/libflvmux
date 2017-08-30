@@ -5,7 +5,7 @@ struct nal_parser {
   buffer_t *bufs[2];
   buffer_t *curr;
   size_t nframes;
-  nal_parser_cb *cb;
+  nal_parse_cb *cb;
   void *user;
 };
 
@@ -38,8 +38,6 @@ static int parse(nal_parser_t *np, buffer_t *in) {
   buf = np->curr;
   res = buffer_copy(buf, in, buf->length, 0, in->length);
 
-  //if (buf->pts == -1) buf->pts = in->pts;
-
   if (res != 0) {
     ERROR("%d", res);
     return -2;
@@ -68,12 +66,15 @@ static int parse(nal_parser_t *np, buffer_t *in) {
         ++np->nframes;
         memset(&frame, 0, sizeof(frame));
         frame.type = data[nalStart] & 0x1f;
-        frame.buffer.data = &data[nalStart - nalStartHdrSz];
-        frame.buffer.size = buf->size - (nalStart - nalStartHdrSz);
-        frame.buffer.length = nalEnd - nalStart + nalStartHdrSz;
-        //frame.buffer.pts = buf->pts;
+        frame.nalu.data = &data[nalStart - nalStartHdrSz];
+        frame.nalu.size = buf->size - (nalStart - nalStartHdrSz);
+        frame.nalu.length = nalEnd - nalStart + nalStartHdrSz;
+
+        frame.buffer.data = &data[nalStart];
+        frame.buffer.length = nalEnd - nalStart;
+        frame.buffer.size = frame.buffer.length;
+
         np->cb(&frame, np->user);
-        //buf->pts = -1;
         continue;
       }
     }
@@ -96,7 +97,7 @@ static int parse(nal_parser_t *np, buffer_t *in) {
   return 0;
 }
 
-nal_parser_t *nal_parser_create(nal_parser_cb *cb, void *user) {
+nal_parser_t *nal_parser_create(nal_parse_cb *cb, void *user) {
   nal_parser_t *np;
   if (!cb || !user) return NULL;
   np = calloc(1, sizeof(*np));
@@ -106,13 +107,11 @@ nal_parser_t *nal_parser_create(nal_parser_cb *cb, void *user) {
     nal_parser_destroy(np);
     return NULL;
   }
-  //np->bufs[0]->pts = -1;
   np->bufs[1] = buffer_alloc(65536 * 4);
   if (!np->bufs[1]) {
     nal_parser_destroy(np);
     return NULL;
   }
-  //np->bufs[1]->pts = -1;
   np->curr = np->bufs[0];
   np->cb = cb;
   np->user = user;
