@@ -7,7 +7,13 @@
 
 typedef struct avcc_transmuxer avcc_transmuxer_t;
 
-typedef int (avcc_transmux_cb)(buffer_t *buf, void *user);
+typedef struct {
+  buffer_t buffer;
+  bool keyframe;
+  bool header;
+} avcc_pkt_t;
+
+typedef int (avcc_transmux_cb)(avcc_pkt_t *pkt, void *user);
 
 avcc_transmuxer_t *avcc_transmuxer_create(avcc_transmux_cb *cb, void *user);
 int avcc_transmuxer_destroy(avcc_transmuxer_t *t);

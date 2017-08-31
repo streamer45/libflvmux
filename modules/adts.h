@@ -7,7 +7,9 @@
 typedef struct adts_parser adts_parser_t;
 
 typedef struct {
+  buffer_t frame;
   buffer_t buffer;
+  bool header;
 } adts_frame_t;
 
 typedef int (adts_parser_cb)(adts_frame_t *, void *user);
