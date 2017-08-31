@@ -35,6 +35,7 @@ typedef struct {
   buffer_t buf;
   int64_t pts;
   int64_t dts;
+  bool header;
   int type;
   union {
     audio_frame_t audio;
