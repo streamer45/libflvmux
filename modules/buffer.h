@@ -12,6 +12,7 @@ typedef struct {
   uint8_t *data;
   size_t size;
   size_t length;
+  int64_t pts;
 } buffer_t;
 
 buffer_t *buffer_alloc(size_t size);
