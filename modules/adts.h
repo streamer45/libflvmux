@@ -10,6 +10,7 @@ typedef struct {
   buffer_t frame;
   buffer_t buffer;
   bool header;
+  int64_t pts;
 } adts_frame_t;
 
 typedef int (adts_parser_cb)(adts_frame_t *, void *user);

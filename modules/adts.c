@@ -25,6 +25,7 @@ static int parse(adts_parser_t *ap, buffer_t *in) {
   //if (buf->length == 0) buf->pts = in->pts;
 
   res = buffer_copy(buf, in, buf->length, 0, in->length);
+  buf->pts = in->pts;
 
 
   if (res != 0) {
@@ -77,6 +78,7 @@ static int parse(adts_parser_t *ap, buffer_t *in) {
       frame.buffer.size = frame.frame.size - ADTS_HEADER_SIZE;
       frame.buffer.data = frame.frame.data + ADTS_HEADER_SIZE;
       frame.buffer.length = frame.frame.length - ADTS_HEADER_SIZE;
+      frame.pts = buf->pts;
 
       //frame.buffer.pts = buf->pts;
       ap->cb(&frame, ap->user);

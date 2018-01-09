@@ -70,6 +70,9 @@ int flv_muxer_mux(flv_muxer_t *muxer, frame_t *frame) {
   muxer->buf->data[2] = (len >> 8) & 0xff;
   muxer->buf->data[3] = len & 0xff;
 
+
+  //fprintf(stderr, "dts: %lld\n", frame->dts);
+
   muxer->buf->data[4] = (frame->dts >> 16) & 0xff;
   muxer->buf->data[5] = (frame->dts >> 8) & 0xff;
   muxer->buf->data[6] = (frame->dts) & 0xff;
