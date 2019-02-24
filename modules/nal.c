@@ -66,6 +66,7 @@ static int parse(nal_parser_t *np, buffer_t *in) {
         ++np->nframes;
         memset(&frame, 0, sizeof(frame));
         frame.type = data[nalStart] & 0x1f;
+        frame.long_sc = nalStartHdrSz == 4;
         frame.nalu.data = &data[nalStart - nalStartHdrSz];
         frame.nalu.size = buf->size - (nalStart - nalStartHdrSz);
         frame.nalu.length = nalEnd - nalStart + nalStartHdrSz;
@@ -93,6 +94,46 @@ static int parse(nal_parser_t *np, buffer_t *in) {
     }
     np->curr = new;
   }
+
+  return 0;
+}
+
+int nal_parser_flush(nal_parser_t *np) {
+  int res;
+  size_t nalStart = 0;
+  size_t nalStartHdrSz = 0;
+  size_t nalEnd = 0;
+  nal_frame_t frame;
+  uint8_t *data;
+  buffer_t *buf;
+
+  if (!np) return -1;
+  buf = np->curr;
+  if (!buf) return 0;
+
+  data = buf->data;
+
+  res = checkNALStart(data);
+
+  if (res == 0) return 0;
+
+  nalStartHdrSz = res;
+  nalStart = res;
+  nalEnd = buf->length;
+
+  ++np->nframes;
+  memset(&frame, 0, sizeof(frame));
+  frame.type = data[nalStart] & 0x1f;
+  frame.long_sc = nalStartHdrSz == 4;
+  frame.nalu.data = &data[nalStart - nalStartHdrSz];
+  frame.nalu.size = buf->size - (nalStart - nalStartHdrSz);
+  frame.nalu.length = nalEnd - nalStart + nalStartHdrSz;
+
+  frame.buffer.data = &data[nalStart];
+  frame.buffer.length = nalEnd - nalStart;
+  frame.buffer.size = frame.buffer.length;
+
+  np->cb(&frame, np->user);
 
   return 0;
 }

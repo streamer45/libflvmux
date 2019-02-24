@@ -70,12 +70,14 @@ int avcc_transmux(avcc_transmuxer_t *t, nal_frame_t *nalu) {
     pkt.buffer = *t->header;
     pkt.keyframe = true;
     pkt.header = true;
+    pkt.buffer.pts = nalu->buffer.pts;
     return t->cb(&pkt, t->user);
   } else if (t->header->length) {
     if (nalu->type == NAL_SPS) {
       pkt.buffer = *t->header;
       pkt.keyframe = true;
       pkt.header = true;
+      pkt.buffer.pts = nalu->buffer.pts;
       return t->cb(&pkt, t->user);
     } else if (nalu->type != NAL_PPS && nalu->type != NAL_SPS) {
       t->pkt->data[0] = (nalu->buffer.length >> 24) & 0xff;
@@ -86,6 +88,7 @@ int avcc_transmux(avcc_transmuxer_t *t, nal_frame_t *nalu) {
       t->pkt->length = 4 + nalu->buffer.length;
       pkt.buffer = *t->pkt;
       pkt.keyframe = nalu->type == NAL_IDR;
+      pkt.buffer.pts = nalu->buffer.pts;
       return t->cb(&pkt, t->user);
     }
   }

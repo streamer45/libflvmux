@@ -21,6 +21,7 @@ typedef enum {
 typedef struct {
   buffer_t nalu;
   buffer_t buffer;
+  int long_sc;
   int type;
 } nal_frame_t;
 
@@ -29,5 +30,6 @@ typedef int (nal_parse_cb)(nal_frame_t *, void *user);
 nal_parser_t *nal_parser_create(nal_parse_cb *cb, void *user);
 int nal_parser_destroy(nal_parser_t *np);
 int nal_parser_parse(nal_parser_t *np, buffer_t *buf);
+int nal_parser_flush(nal_parser_t *np);
 
 #endif
