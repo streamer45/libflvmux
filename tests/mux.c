@@ -1,7 +1,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "lib.h"
+#include "libflvmux.h"
 #include "adts.h"
 #include "nal.h"
 #include "avcc.h"
