@@ -49,6 +49,7 @@ int flv_muxer_mux(flv_muxer_t *muxer, frame_t *frame) {
     len = 5 + frame->buf.length;
     if (frame->video.keyframe) muxer->buf->data[11] = 0x17;
     else muxer->buf->data[11] = 0x27;
+    //if (frame->header) fprintf(stderr, "flv: HEADER\n");
     if (frame->header) muxer->buf->data[12] = 0x00;
     else muxer->buf->data[12] = 0x01;
     int ct = abs(frame->pts - frame->dts);
@@ -58,6 +59,8 @@ int flv_muxer_mux(flv_muxer_t *muxer, frame_t *frame) {
   }
 
   if (frame->type == FRAME_AUDIO) {
+    // fprintf(stderr, "FLV: %p\n", muxer);
+    // fprintf(stderr, "FLV: %p\n", muxer->buf);
     muxer->buf->data[0] = 0x08;
     muxer->buf->data[11] = 0xaf;
     if (frame->header) muxer->buf->data[12] = 0x00;
