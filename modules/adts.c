@@ -27,7 +27,6 @@ static int parse(adts_parser_t *ap, buffer_t *in) {
   res = buffer_copy(buf, in, buf->length, 0, in->length);
   buf->pts = in->pts;
 
-
   if (res != 0) {
     ERROR("%d", res);
     return -1;
@@ -57,6 +56,7 @@ static int parse(adts_parser_t *ap, buffer_t *in) {
       memset(&frame, 0, sizeof(frame));
       frame.buffer = *ap->config;
       frame.header = true;
+      frame.pts = buf->pts;
 
       DEBUG("0x%x 0x%x", ap->config->data[0], ap->config->data[1]);
 
